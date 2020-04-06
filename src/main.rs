@@ -62,9 +62,84 @@ extern "C" {
     // extern void digitalWrite (int pin, int value) ;
     pub fn digitalWrite(pin: c_int, value: c_int);
 
+    // int  digitalRead         (int pin) ;
+    pub fn digitalRead(pin: c_int) -> c_int;
+
     // extern void delayMicroseconds (unsigned int howLong) ;
     pub fn delayMicroseconds(howLong: u16);
 
+    pub fn pullUpDnControl(pin: c_int, pud: c_int);
+
+    //extern int  wiringPiISR         (int pin, int mode, void (*function)(void)) ;
+    pub fn wiringPiISR(pin: c_int, mode: c_int, get_ir: fn()) -> c_int;
+
+}
+
+const IRIN: c_int = 5;
+
+const INPUT: c_int = 0;
+const INT_EDGE_FALLING: c_int = 1;
+const PUD_OFF: c_int = 0;
+const PUD_DOWN: c_int = 1;
+const PUD_UP: c_int = 2;
+
+const IR_LIMITS: usize = 64; // bytes buffer = IR_LIMITS x8 bits
+
+fn irInit() {
+    unsafe {
+        pinMode(IRIN, INPUT);
+        pullUpDnControl(IRIN, PUD_UP);
+        // to detect falling edge
+        // let get_ir = || getIR();
+        wiringPiISR(IRIN, INT_EDGE_FALLING, || get_ir());
+        // done = 0;
+    }
+}
+
+fn get_ir() {
+    // let buf: [u8; 64];
+    let mut buf: Vec<u8> = Vec::new();
+    let i: u8 = count_low();
+    //   let mut j: u16 = 0x0; // capable 32768 bits = 4096 bytes
+    // let mut k: u8 = 0x0;
+    let mut bits: u32 = 0;
+    // i = countLow();
+    for j in 0..IR_LIMITS {
+        // buffer bytes LIMITS
+        for i in 0..8 {
+            // 8 bits
+            let k = count_low();
+            if k == 0 {
+                buf[j] >>= 8 - i;
+                // done = 1;
+                println!("get_ir k == 0, buf: {:?}, bits: {:?}", buf, bits);
+                return;
+            }
+            buf[j] >>= 1;
+            buf[j] = buf[j] + (if k > 30 { 0x80 } else { 0 });
+            bits = bits + 1;
+        }
+    }
+    //   done = 1;
+    println!("get_ir buf: {:?}, bits: {:?}", buf, bits);
+}
+
+fn count_low() -> u8 {
+    unsafe {
+        let mut i: u8 = 0;
+        while digitalRead(IRIN) == 0 {}
+        // ; // wait
+        while digitalRead(IRIN) == 1 {
+            i = i + 1;
+            delayMicroseconds(26);
+            if i == 0 {
+                println!("count_low i == 0");
+                return 0; // timeout
+            }
+        }
+        println!("count_low i");
+        return i;
+    }
 }
 
 fn controller_init(motors: &mut [bool; 8]) {

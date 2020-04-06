@@ -6,7 +6,9 @@ Using this library as a reference point: https://github.com/Ogeon/rust-wiringpi
 
 ## Build
 
-### Pre-requisites
+### Compiling and Linking on MacOS
+
+**There's an issue now compiling and linking against `wiringPi`. Not sure how to get the linker to work**
 
 ```bash
 # https://rust.azdevs.org/2019-07-24/
