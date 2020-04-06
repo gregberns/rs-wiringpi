@@ -7,6 +7,12 @@ use std::time::Duration;
 // * Turn off/on a LED first, then worry about motors
 
 fn main() {
+    println!("wiringPiSetup()");
+    unsafe {
+        wiringPiSetup();
+    }
+    println!("wiringPiSetup()");
+
     println!("irInit()");
     irInit();
     println!("irInit() - complete");
@@ -63,6 +69,7 @@ const MOTORDATA: c_int = 27; // GPIO 0 (ID_SD)
 extern "C" {
 
     pub fn wiringPiSetup();
+
     pub fn pinMode(pin: c_int, mode: c_int);
 
     // C signature
