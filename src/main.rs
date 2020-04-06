@@ -7,7 +7,14 @@ use std::time::Duration;
 // * Turn off/on a LED first, then worry about motors
 
 fn main() {
-    println!("Hello, world!");
+    println!("irInit()");
+    irInit();
+    println!("irInit() - complete");
+
+    sleep(Duration::from_secs(50));
+}
+
+fn drive() {
     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
 
     controller_init(&mut motors);
