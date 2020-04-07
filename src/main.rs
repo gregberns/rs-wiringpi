@@ -2,6 +2,7 @@
 use libc::c_int;
 use std::thread::sleep;
 use std::time::Duration;
+use stopwatch::Stopwatch;
 
 // Test:
 // * Turn off/on a LED first, then worry about motors
@@ -14,10 +15,94 @@ fn main() {
     println!("wiringPiSetup()");
 
     println!("irInit()");
-    irInit();
+    loop {
+        let dis = distance_measure();
+        println!("{}", dis);
+        sleep(Duration::from_millis(10));
+    }
     println!("irInit() - complete");
 
     sleep(Duration::from_secs(50));
+}
+
+const Trig: i32 = 25;
+const Echo: i32 = 4;
+
+fn distance_measure() -> f64 {
+    //   struct timeval tv1;
+    //   struct timeval tv2;
+    //   long start, stop;
+    //   float dis;
+    //   long waitCount = 0;
+
+    unsafe {
+        digitalWrite(Trig, LOW);
+        delayMicroseconds(2);
+        digitalWrite(Trig, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(Trig, LOW);
+    }
+
+    let mut waitCount: i32 = 0;
+
+    unsafe {
+        while !(digitalRead(Echo) == 1) {
+            waitCount = waitCount + 1;
+            if waitCount >= 5000 {
+                break;
+            } else {
+                //   sleep(0.001);
+                sleep(Duration::from_millis(1));
+            }
+        }
+    }
+    //   gettimeofday(&tv1, NULL);
+    let sw = Stopwatch::start_new();
+    waitCount = 0;
+    unsafe {
+        while !(digitalRead(Echo) == 0) {
+            waitCount = waitCount + 1;
+            if waitCount >= 5000 {
+                break;
+            } else {
+                //   sleep(0.001);
+                sleep(Duration::from_millis(1));
+            }
+        }
+    }
+    //gettimeofday(&tv2, NULL);
+    //microseconds
+    let usec = sw.elapsed_ms();
+
+    /*
+      int gettimeofday(struct timeval *tv, struct timezone *tz);
+      The functions gettimeofday() and settimeofday() can get and set the time as well as a timezone.
+      The use of the timezone structure is obsolete; the tz argument should normally be specified as NULL.
+    */
+    //   start = tv1.tv_sec * 1000000 + tv1.tv_usec;
+    //   stop = tv2.tv_sec * 1000000 + tv2.tv_usec;
+
+    let dis = usec / (1000000 * 34000) / 2;
+    //   dis = (float)(stop - start) / 1000000 * 34000 / 2;
+
+    dis as f64
+}
+
+#[test]
+fn test() {
+    let sw = Stopwatch::start_new();
+
+    sleep(Duration::from_millis(1));
+    sleep(Duration::from_millis(1));
+    sleep(Duration::from_millis(1));
+
+    let usec = sw.elapsed_ms();
+
+    let dis = usec / (1000000 * 34000) / 2;
+
+    println!("dis     {}", dis);
+    println!("dis i64 {}", dis as i64);
+    println!("dis f64 {}", dis as i64);
 }
 
 fn drive() {

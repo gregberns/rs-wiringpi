@@ -10,3 +10,4 @@ links = "wiringpi"
 
 [dependencies]
 libc = "0.2.68"
+stopwatch = "0.0.7"
