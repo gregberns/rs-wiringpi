@@ -1,5 +1,6 @@
 // mod wiringpi_bindings;
 use libc::c_int;
+use std::convert::TryFrom;
 use std::thread::sleep;
 use std::time::Duration;
 use stopwatch::Stopwatch;
@@ -17,7 +18,7 @@ fn main() {
     println!("irInit()");
     loop {
         let dis = distance_measure();
-        println!("{}", dis);
+        // println!("{}", dis);
         sleep(Duration::from_millis(10));
     }
     println!("irInit() - complete");
@@ -28,13 +29,7 @@ fn main() {
 const Trig: i32 = 25;
 const Echo: i32 = 4;
 
-fn distance_measure() -> f64 {
-    //   struct timeval tv1;
-    //   struct timeval tv2;
-    //   long start, stop;
-    //   float dis;
-    //   long waitCount = 0;
-
+fn distance_measure() -> i64 {
     unsafe {
         digitalWrite(Trig, LOW);
         delayMicroseconds(2);
@@ -53,10 +48,10 @@ fn distance_measure() -> f64 {
             } else {
                 //   sleep(0.001);
                 sleep(Duration::from_millis(1));
+                // sleep(Duration::from_micros(50));
             }
         }
     }
-    //   gettimeofday(&tv1, NULL);
     let sw = Stopwatch::start_new();
     waitCount = 0;
     unsafe {
@@ -66,26 +61,40 @@ fn distance_measure() -> f64 {
                 break;
             } else {
                 //   sleep(0.001);
-                sleep(Duration::from_millis(1));
+                //sleep(Duration::from_millis(1));
+                sleep(Duration::from_micros(50));
             }
         }
     }
-    //gettimeofday(&tv2, NULL);
-    //microseconds
-    let usec = sw.elapsed_ms();
 
-    /*
-      int gettimeofday(struct timeval *tv, struct timezone *tz);
-      The functions gettimeofday() and settimeofday() can get and set the time as well as a timezone.
-      The use of the timezone structure is obsolete; the tz argument should normally be specified as NULL.
-    */
-    //   start = tv1.tv_sec * 1000000 + tv1.tv_usec;
-    //   stop = tv2.tv_sec * 1000000 + tv2.tv_usec;
+    // Sound travels at approximately 340 meters per second. This corresponds
+    // to about 29.412µs (microseconds) per centimeter. To measure the distance
+    // the sound has travelled we use the formula:
+    //
+    // Distance = (Time x SpeedOfSound) / 2
+    //
+    // The "2" is in the formula because the sound has to travel back and forth.
+    // First the sound travels away from the sensor, and then it bounces off of
+    // a surface and returns back. The easy way to read the distance as centimeters
+    // is to use the formula: Centimeters = ((Microseconds / 2) / 29). For example,
+    // if it takes 100µs (microseconds) for the ultrasonic sound to bounce back,
+    // then the distance is ((100 / 2) / 29) centimeters or about 1.7 centimeters.
 
-    let dis = usec / (1000000 * 34000) / 2;
-    //   dis = (float)(stop - start) / 1000000 * 34000 / 2;
+    let usec = sw.elapsed().as_micros() * 1000 / 34000 / 2;
 
-    dis as f64
+    let u_32 = u32::try_from(usec).unwrap();
+    let f_64 = f64::try_from(u_32).unwrap();
+    let distance_f64 = f_64.log2() * 7.62 as f64;
+
+    let distance_i64 = distance_f64.round() as i64;
+
+    println!(
+        "elapsed: {:?}, usec: {:?}, distance: {:?}",
+        sw.elapsed().as_micros(),
+        usec,
+        distance_i64
+    );
+    distance_i64
 }
 
 #[test]
