@@ -51,23 +51,26 @@ fn stop() {
 fn update_wheels(wheels: Vec<WheelDir>) {
     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
 
-    for wheel in wheels {
-        let wheel_index: usize = wheel_index(wheel);
+    for wheel in wheels.iter() {
+        let wheel_index: usize = wheel_index(*wheel);
         motors[wheel_index] = true;
     }
+
+    println!("update_wheels: {:?}, motors: {:?}", wheels, motors);
 
     latch_tx(&motors);
 }
 
+#[derive(Debug, Clone, Copy)]
 enum WheelDir {
-    ForwardRearRight = 0,   // Rear right forward
-    ForwardRearLeft = 1,    // Rear left forward
-    BackwardRearRight = 2,  // rear right backward
-    BackwardFrontLeft = 3,  // front left backward
-    BackwardFrontRight = 4, // front right backward
-    ForwardFrontRight = 5,  // front right forward
-    ForwardFrontLeft = 6,   // front left forward
-    BackwardRearLeft = 7,   // rear left backward
+    ForwardRearRight,   // Rear right forward
+    ForwardRearLeft,    // Rear left forward
+    BackwardRearRight,  // rear right backward
+    BackwardFrontLeft,  // front left backward
+    BackwardFrontRight, // front right backward
+    ForwardFrontRight,  // front right forward
+    ForwardFrontLeft,   // front left forward
+    BackwardRearLeft,   // rear left backward
 }
 
 fn wheel_index(wheel: WheelDir) -> usize {
@@ -88,27 +91,6 @@ fn init_wiringpi_setup() {
         wiringPiSetup();
     }
 }
-
-// fn test_drive() {
-//     controller_init();
-
-//     forward();
-//     sleep(Duration::from_secs(2));
-
-//     println!("=====");
-
-//     stop();
-//     sleep(Duration::from_secs(2));
-
-//     println!("=====");
-
-//     forward();
-//     sleep(Duration::from_secs(2));
-
-//     println!("=====");
-
-//     stop();
-// }
 
 // const MOTOR1_A: u8 = 3;
 // const MOTOR1_B: u8 = 2;
@@ -169,28 +151,6 @@ fn controller_init() {
     latch_tx(&motors);
 }
 
-// fn forward() {
-//     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-//     motors[2] = true;
-//     motors[3] = true;
-//     motors[4] = true;
-//     motors[7] = true;
-//     latch_tx(&motors);
-// }
-
-// fn stop() {
-//     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-//     motors[0] = false;
-//     motors[1] = false;
-//     motors[2] = false;
-//     motors[3] = false;
-//     motors[4] = false;
-//     motors[5] = false;
-//     motors[6] = false;
-//     motors[7] = false;
-//     latch_tx(&motors);
-// }
-
 fn latch_tx(motors: &[bool; 8]) {
     unsafe {
         digitalWrite(MOTORLATCH, LOW);
@@ -214,7 +174,6 @@ fn latch_tx(motors: &[bool; 8]) {
         }
 
         digitalWrite(MOTORLATCH, HIGH);
-        // latch_state
     }
 }
 
