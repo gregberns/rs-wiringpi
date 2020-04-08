@@ -80,23 +80,12 @@ fn distance_measure() -> u32 {
     // if it takes 100µs (microseconds) for the ultrasonic sound to bounce back,
     // then the distance is ((100 / 2) / 29) centimeters or about 1.7 centimeters.
 
-    let usec = sw.elapsed().as_micros() / 17;
+    let usec = sw.elapsed().as_micros();
+    let x = ((1.6 * (usec as f64 / 100.0) as f64) + 0.0).round() as u32;
 
-    // let u_32 = u32::try_from(usec).unwrap();
-    // let f_64 = f64::try_from(u_32).unwrap();
-    // let distance_f64 = f_64.log2() * 7.62 as f64;
+    println!("micros: {:?}, x: {:?}", usec, x);
 
-    // let distance_i64 = distance_f64.round() as i64;
-
-    (1.1 * usec as f64 + 2.0).round() as u32
-
-    // println!(
-    //     "elapsed: {:?}, usec: {:?}, distance: {:?}",
-    //     sw.elapsed().as_micros(),
-    //     usec,
-    //     distance_i64
-    // );
-    // distance_i64
+    x
 }
 
 #[test]
