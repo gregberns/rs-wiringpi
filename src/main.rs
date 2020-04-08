@@ -15,17 +15,7 @@ fn main() {
 
     // test_drive();
 
-    test();
-    sleep(Duration::from_millis(10));
-    test();
-    sleep(Duration::from_millis(10));
-    test();
-    sleep(Duration::from_millis(10));
-    test();
-    sleep(Duration::from_millis(10));
-    test();
-    sleep(Duration::from_millis(10));
-    test();
+    forward();
     // backward();
     sleep(Duration::from_secs(10));
 
