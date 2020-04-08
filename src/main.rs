@@ -42,6 +42,10 @@ fn backward() {
     ]);
 }
 
+fn stop() {
+    update_wheels(vec![]);
+}
+
 fn update_wheels(wheels: Vec<WheelDir>) {
     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
 
@@ -163,27 +167,27 @@ fn controller_init() {
     latch_tx(&motors);
 }
 
-fn forward() {
-    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-    motors[2] = true;
-    motors[3] = true;
-    motors[4] = true;
-    motors[7] = true;
-    latch_tx(&motors);
-}
+// fn forward() {
+//     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
+//     motors[2] = true;
+//     motors[3] = true;
+//     motors[4] = true;
+//     motors[7] = true;
+//     latch_tx(&motors);
+// }
 
-fn stop() {
-    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-    motors[0] = false;
-    motors[1] = false;
-    motors[2] = false;
-    motors[3] = false;
-    motors[4] = false;
-    motors[5] = false;
-    motors[6] = false;
-    motors[7] = false;
-    latch_tx(&motors);
-}
+// fn stop() {
+//     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
+//     motors[0] = false;
+//     motors[1] = false;
+//     motors[2] = false;
+//     motors[3] = false;
+//     motors[4] = false;
+//     motors[5] = false;
+//     motors[6] = false;
+//     motors[7] = false;
+//     latch_tx(&motors);
+// }
 
 fn latch_tx(motors: &[bool; 8]) {
     unsafe {
