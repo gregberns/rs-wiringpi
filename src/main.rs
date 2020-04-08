@@ -17,10 +17,10 @@ fn main() {
 
     // test_drive();
 
-    forward();
+    backward();
     sleep(Duration::from_secs(10));
 
-    backward();
+    forward();
     sleep(Duration::from_secs(10));
 
     stop();
