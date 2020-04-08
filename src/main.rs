@@ -17,6 +17,7 @@ fn main() {
 
     test();
     sleep(Duration::from_secs(5));
+    stop();
 }
 
 fn test() {
