@@ -10,7 +10,7 @@ use stopwatch::Stopwatch;
 
 fn main() {
     controller_init();
-    sleep(Duration::from_secs(2));
+    sleep(Duration::from_secs(5));
     // init_distance_measure();
 
     // test_drive();
@@ -19,15 +19,15 @@ fn main() {
     // backward();
     sleep(Duration::from_secs(10));
 
-    forward();
-    sleep(Duration::from_secs(10));
+    // forward();
+    // sleep(Duration::from_secs(10));
 
     stop();
 }
 
 fn test() {
     // update_wheels(vec![WheelDir::ForwardRearRight]);
-    let mut motors: [bool; 8] = [true, false, false, false, false, false, false, false];
+    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, true];
     latch_tx(&motors);
 }
 
