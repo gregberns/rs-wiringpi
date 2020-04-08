@@ -10,7 +10,9 @@ use stopwatch::Stopwatch;
 
 fn main() {
     init_wiringpi_setup();
+    sleep(Duration::from_secs(1));
     controller_init();
+    sleep(Duration::from_secs(1));
     // init_distance_measure();
 
     // test_drive();
@@ -70,14 +72,14 @@ enum WheelDir {
 
 fn wheel_index(wheel: WheelDir) -> usize {
     match wheel {
-        ForwardRearRight => 0,
-        ForwardRearLeft => 1,
-        BackwardRearRight => 2,
-        BackwardFrontLeft => 3,
-        BackwardFrontRight => 4,
-        ForwardFrontRight => 5,
-        ForwardFrontLeft => 6,
-        BackwardRearLeft => 7,
+        WheelDir::ForwardRearRight => 0,
+        WheelDir::ForwardRearLeft => 1,
+        WheelDir::BackwardRearRight => 2,
+        WheelDir::BackwardFrontLeft => 3,
+        WheelDir::BackwardFrontRight => 4,
+        WheelDir::ForwardFrontRight => 5,
+        WheelDir::ForwardFrontLeft => 6,
+        WheelDir::BackwardRearLeft => 7,
     }
 }
 
@@ -87,26 +89,26 @@ fn init_wiringpi_setup() {
     }
 }
 
-fn test_drive() {
-    controller_init();
+// fn test_drive() {
+//     controller_init();
 
-    forward();
-    sleep(Duration::from_secs(2));
+//     forward();
+//     sleep(Duration::from_secs(2));
 
-    println!("=====");
+//     println!("=====");
 
-    stop();
-    sleep(Duration::from_secs(2));
+//     stop();
+//     sleep(Duration::from_secs(2));
 
-    println!("=====");
+//     println!("=====");
 
-    forward();
-    sleep(Duration::from_secs(2));
+//     forward();
+//     sleep(Duration::from_secs(2));
 
-    println!("=====");
+//     println!("=====");
 
-    stop();
-}
+//     stop();
+// }
 
 // const MOTOR1_A: u8 = 3;
 // const MOTOR1_B: u8 = 2;
