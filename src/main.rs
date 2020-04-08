@@ -27,7 +27,7 @@ fn main() {
 
 fn test() {
     // update_wheels(vec![WheelDir::ForwardRearRight]);
-    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, true];
+    let mut motors: [bool; 8] = [true, false, false, false, false, false, false, false];
     latch_tx(&motors);
 }
 
@@ -155,6 +155,7 @@ fn latch_tx(motors: &[bool; 8]) {
         digitalWrite(MOTORLATCH, LOW);
         digitalWrite(MOTORDATA, LOW);
 
+        delayMicroseconds(1);
         for i in motors.iter() {
             delayMicroseconds(1); // 10 micros  delayMicroseconds
 
