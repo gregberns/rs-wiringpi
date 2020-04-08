@@ -22,10 +22,11 @@ fn main() {
 
 fn test() {
     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-    motors[0] = true;
-    // motors[1] = true;
-    // motors[2] = true;
-    // motors[3] = true;
+    // motors[0] = true; // Rear right forward
+    // motors[1] = true; // Rear left forward
+    // motors[2] = true; // rear right back
+    // Unknown
+    motors[3] = true;
     // motors[4] = true;
     // motors[5] = true;
     // motors[6] = true;
