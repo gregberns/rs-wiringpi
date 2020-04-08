@@ -18,8 +18,8 @@ fn main() {
     println!("irInit()");
     loop {
         let dis = distance_measure();
-        // println!("{}", dis);
-        sleep(Duration::from_millis(10));
+        println!("Distance: {}", dis);
+        sleep(Duration::from_millis(50));
     }
     println!("irInit() - complete");
 
@@ -29,7 +29,7 @@ fn main() {
 const Trig: i32 = 25;
 const Echo: i32 = 4;
 
-fn distance_measure() -> i64 {
+fn distance_measure() -> u32 {
     unsafe {
         digitalWrite(Trig, LOW);
         delayMicroseconds(2);
@@ -47,8 +47,8 @@ fn distance_measure() -> i64 {
                 break;
             } else {
                 //   sleep(0.001);
-                sleep(Duration::from_millis(1));
-                // sleep(Duration::from_micros(50));
+                // sleep(Duration::from_millis(1));
+                sleep(Duration::from_micros(100));
             }
         }
     }
@@ -80,21 +80,23 @@ fn distance_measure() -> i64 {
     // if it takes 100µs (microseconds) for the ultrasonic sound to bounce back,
     // then the distance is ((100 / 2) / 29) centimeters or about 1.7 centimeters.
 
-    let usec = sw.elapsed().as_micros() * 1000 / 34000 / 2;
+    let usec = sw.elapsed().as_micros() / 17;
 
-    let u_32 = u32::try_from(usec).unwrap();
-    let f_64 = f64::try_from(u_32).unwrap();
-    let distance_f64 = f_64.log2() * 7.62 as f64;
+    // let u_32 = u32::try_from(usec).unwrap();
+    // let f_64 = f64::try_from(u_32).unwrap();
+    // let distance_f64 = f_64.log2() * 7.62 as f64;
 
-    let distance_i64 = distance_f64.round() as i64;
+    // let distance_i64 = distance_f64.round() as i64;
 
-    println!(
-        "elapsed: {:?}, usec: {:?}, distance: {:?}",
-        sw.elapsed().as_micros(),
-        usec,
-        distance_i64
-    );
-    distance_i64
+    (1.1 * usec as f64 + 2.0).round() as u32
+
+    // println!(
+    //     "elapsed: {:?}, usec: {:?}, distance: {:?}",
+    //     sw.elapsed().as_micros(),
+    //     usec,
+    //     distance_i64
+    // );
+    // distance_i64
 }
 
 #[test]
