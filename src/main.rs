@@ -9,10 +9,8 @@ use stopwatch::Stopwatch;
 // * Turn off/on a LED first, then worry about motors
 
 fn main() {
-    init_wiringpi_setup();
-    sleep(Duration::from_secs(1));
     controller_init();
-    sleep(Duration::from_secs(1));
+    sleep(Duration::from_secs(2));
     // init_distance_measure();
 
     // test_drive();
@@ -28,7 +26,9 @@ fn main() {
 }
 
 fn test() {
-    update_wheels(vec![WheelDir::ForwardRearRight]);
+    // update_wheels(vec![WheelDir::ForwardRearRight]);
+    let mut motors: [bool; 8] = [true, false, false, false, false, false, false, false];
+    latch_tx(&motors);
 }
 
 fn forward() {
@@ -88,12 +88,6 @@ fn wheel_index(wheel: WheelDir) -> usize {
         WheelDir::ForwardFrontRight => 5,
         WheelDir::ForwardFrontLeft => 6,
         WheelDir::BackwardRearLeft => 7,
-    }
-}
-
-fn init_wiringpi_setup() {
-    unsafe {
-        wiringPiSetup();
     }
 }
 
