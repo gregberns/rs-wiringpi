@@ -17,13 +17,18 @@ fn main() {
 
     // test_drive();
 
-    backward();
+    test();
+    // backward();
     sleep(Duration::from_secs(10));
 
     forward();
     sleep(Duration::from_secs(10));
 
     stop();
+}
+
+fn test() {
+    update_wheels(vec![WheelDir::ForwardRearRight, WheelDir::ForwardRearLeft]);
 }
 
 fn forward() {
