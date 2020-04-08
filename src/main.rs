@@ -1,26 +1,23 @@
-// mod wiringpi_bindings;
 use libc::c_int;
-// use std::convert::TryFrom;
 use std::thread::sleep;
 use std::time::Duration;
 use stopwatch::Stopwatch;
 
-// Test:
-// * Turn off/on a LED first, then worry about motors
-
 fn main() {
     controller_init();
-    sleep(Duration::from_secs(5));
+    sleep(Duration::from_secs(2));
     // init_distance_measure();
 
     // test_drive();
 
     forward();
-    // backward();
     sleep(Duration::from_secs(10));
 
-    // forward();
-    // sleep(Duration::from_secs(10));
+    backward();
+    sleep(Duration::from_secs(10));
+
+    forward();
+    sleep(Duration::from_secs(10));
 
     stop();
 }
@@ -314,159 +311,3 @@ fn count_low() -> u8 {
         return i;
     }
 }
-
-// gcc run-motor.c -lwiringPi -lrt -Wall -pthread
-// Latch=00000008  Front Right
-// Latch=00000000
-// Latch=00000010  Front Left
-// Latch=00000000
-// Latch=00000020  Back Right
-// Latch=00000000
-// Latch=00000001  Back Left
-// Latch=00000000
-
-// Latch=8
-// Latch=18
-// Latch=38
-// Latch=39
-// Latch=31
-// Latch=21
-// Latch=1
-// Latch=0
-
-// 4_A 0
-// 2_B 1
-// 1_B 2
-// 1_A 3
-// 2_A 4
-// 3_A 5
-// 4_B 6
-// 3_B 7
-
-// #define MOTOR1_A 3//2
-// #define MOTOR1_B 2//3
-// #define MOTOR2_A 4//1
-// #define MOTOR2_B 1//4
-// #define MOTOR4_A 0
-// #define MOTOR4_B 6
-// #define MOTOR3_A 5
-// #define MOTOR3_B 7
-
-// struct Motors ([bool; 8]);
-
-// enum MotorNumber {
-//     M1,
-//     M2,
-//     M3,
-//     M4,
-// }
-
-// enum MotorDirection {
-//     Forward,
-//     Backward,
-//     Nutral
-// }
-
-// // const MOTOR1_A: u8 = 3;
-// // const MOTOR1_B: u8 = 2;
-// // const MOTOR2_A: u8 = 4;
-// // const MOTOR2_B: u8 = 1;
-// // const MOTOR4_A: u8 = 0;
-// // const MOTOR4_B: u8 = 6;
-// // const MOTOR3_A: u8 = 5;
-// // const MOTOR3_B: u8 = 7;
-
-// fn forward() {
-//     set_motor(MotorNumber::M1, MotorDirection::Forward);
-//     set_motor(MotorNumber::M2, MotorDirection::Forward);
-//     set_motor(MotorNumber::M3, MotorDirection::Forward);
-//     set_motor(MotorNumber::M4, MotorDirection::Forward);
-// }
-
-// fn stop() {
-//     set_motor(MotorNumber::M1, MotorDirection::Nutral);
-//     set_motor(MotorNumber::M2, MotorDirection::Nutral);
-//     set_motor(MotorNumber::M3, MotorDirection::Nutral);
-//     set_motor(MotorNumber::M4, MotorDirection::Nutral);
-// }
-
-// fn set_motor(motor_number: MotorNumber, direction: MotorDirection){
-//     let motor = match motor_number {
-//         M1 => (MOTOR1_A, MOTOR1_B),
-//         M2 => (MOTOR2_A, MOTOR2_B),
-//         M3 => (MOTOR3_A, MOTOR3_B),
-//         M4 => (MOTOR4_A, MOTOR4_B),
-//     };
-
-//     match direction {
-//         MotorDirection::Forward => ,
-//         MotorDirection::Backward => ,
-//         MotorDirection::Nutral => ,
-//     }
-
-// }
-
-// fn DCMotorRun(motornum: u8, cmd: u8) {
-//     let mut a: u8;
-//     let mut b: u8;
-
-//     match motornum {
-//         1 => {
-//             a = MOTOR1_A;
-//             b = MOTOR1_B;
-//         }
-//         2 => {
-//             a = MOTOR2_A;
-//             b = MOTOR2_B;
-//         }
-//         3 => {
-//             a = MOTOR3_A;
-//             b = MOTOR3_B;
-//         }
-//         4 => {
-//             a = MOTOR4_A;
-//             b = MOTOR4_B;
-//         }
-//         _ => return,
-//     }
-
-//     let mut latch_state: u8 = 0;
-
-//     match cmd {
-//         FORWARD => {
-//             latch_state |= a;
-//             latch_state &= !b;
-//         }
-//         BACKWARD => {
-//             latch_state &= !a;
-//             latch_state |= b;
-//         }
-//         RELEASE => {
-//             latch_state &= !a;
-//             latch_state &= !b;
-//         }
-//         _ => return,
-//     }
-
-//     latch_tx(latch_state);
-
-//     // printf("Latch=%08X\n", latch_state);
-//     return;
-// }
-
-// fn DCMotorInit(num: u8) {
-//     let mut latch_state: u8 = 0;
-
-//     match num {
-//         1 => latch_state &= !MOTOR1_A & !MOTOR1_B,
-//         2 => latch_state &= !MOTOR2_A & !MOTOR2_B,
-//         3 => latch_state &= !MOTOR3_A & !MOTOR3_B,
-//         4 => latch_state &= !MOTOR4_A & !MOTOR4_B,
-//         _ => panic!("Invalid value supplied DCMotorInit"),
-//     }
-
-//     latch_tx(latch_state);
-
-//     println!("Latch={}\n", latch_state);
-//     return;
-// }
