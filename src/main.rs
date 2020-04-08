@@ -15,23 +15,66 @@ fn main() {
 
     // test_drive();
 
-    test();
-    sleep(Duration::from_secs(5));
+    forward();
+    sleep(Duration::from_secs(10));
+
+    backward();
+    sleep(Duration::from_secs(10));
+
     stop();
 }
 
-fn test() {
+fn forward() {
+    update_wheels(vec![
+        WheelDir::ForwardFrontRight,
+        WheelDir::ForwardFrontLeft,
+        WheelDir::ForwardRearRight,
+        WheelDir::ForwardRearLeft,
+    ]);
+}
+
+fn backward() {
+    update_wheels(vec![
+        WheelDir::BackwardFrontRight,
+        WheelDir::BackwardFrontLeft,
+        WheelDir::BackwardRearRight,
+        WheelDir::BackwardRearLeft,
+    ]);
+}
+
+fn update_wheels(wheels: Vec<WheelDir>) {
     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-    // motors[0] = true; // Rear right forward
-    // motors[1] = true; // Rear left forward
-    // motors[2] = true; // rear right back
-    // Unknown
-    motors[3] = true;
-    // motors[4] = true;
-    // motors[5] = true;
-    // motors[6] = true;
-    // motors[7] = true;
+
+    for wheel in wheels {
+        let wheel_index: usize = wheel_index(wheel);
+        motors[wheel_index] = true;
+    }
+
     latch_tx(&motors);
+}
+
+enum WheelDir {
+    ForwardRearRight = 0,   // Rear right forward
+    ForwardRearLeft = 1,    // Rear left forward
+    BackwardRearRight = 2,  // rear right backward
+    BackwardFrontLeft = 3,  // front left backward
+    BackwardFrontRight = 4, // front right backward
+    ForwardFrontRight = 5,  // front right forward
+    ForwardFrontLeft = 6,   // front left forward
+    BackwardRearLeft = 7,   // rear left backward
+}
+
+fn wheel_index(wheel: WheelDir) -> usize {
+    match wheel {
+        ForwardRearRight => 0,
+        ForwardRearLeft => 1,
+        BackwardRearRight => 2,
+        BackwardFrontLeft => 3,
+        BackwardFrontRight => 4,
+        ForwardFrontRight => 5,
+        ForwardFrontLeft => 6,
+        BackwardRearLeft => 7,
+    }
 }
 
 fn init_wiringpi_setup() {
