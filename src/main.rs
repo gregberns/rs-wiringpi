@@ -28,7 +28,7 @@ fn main() {
 }
 
 fn test() {
-    update_wheels(vec![WheelDir::ForwardRearRight, WheelDir::ForwardRearLeft]);
+    update_wheels(vec![WheelDir::ForwardRearRight]);
 }
 
 fn forward() {
