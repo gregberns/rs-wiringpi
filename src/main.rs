@@ -27,7 +27,7 @@ fn main() {
 
 fn test() {
     // update_wheels(vec![WheelDir::ForwardRearRight]);
-    let mut motors: [bool; 8] = [true, false, false, false, false, false, false, false];
+    let mut motors: [bool; 8] = [false, false, true, false, false, false, false, false];
     latch_tx(&motors);
 }
 
