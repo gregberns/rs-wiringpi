@@ -81,11 +81,23 @@ fn distance_measure() -> u32 {
     // then the distance is ((100 / 2) / 29) centimeters or about 1.7 centimeters.
 
     let usec = sw.elapsed().as_micros();
-    let x = ((1.6 * (usec as f64 / 100.0) as f64) + 0.0).round() as u32;
+    let x = convert(usec);
 
     println!("micros: {:?}, x: {:?}", usec, x);
 
     x
+}
+
+fn convert(usec: u128) -> u32 {
+    ((1.6 * (usec as f64 / 100.0) as f64) + 0.0).round() as u32
+}
+
+#[test]
+fn t_convert() {
+    assert_eq!(10, convert(625));
+    assert_eq!(20, convert(1245));
+    assert_eq!(30, convert(1865));
+    assert_eq!(40, convert(2485));
 }
 
 #[test]
