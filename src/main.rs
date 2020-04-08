@@ -1,6 +1,6 @@
 // mod wiringpi_bindings;
 use libc::c_int;
-use std::convert::TryFrom;
+// use std::convert::TryFrom;
 use std::thread::sleep;
 use std::time::Duration;
 use stopwatch::Stopwatch;
@@ -9,149 +9,55 @@ use stopwatch::Stopwatch;
 // * Turn off/on a LED first, then worry about motors
 
 fn main() {
-    println!("wiringPiSetup()");
+    init_wiringpi_setup();
+    controller_init();
+    // init_distance_measure();
+
+    // test_drive();
+
+    test();
+    sleep(Duration::from_secs(5));
+}
+
+fn test() {
+    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
+    motors[0] = true;
+    // motors[1] = true;
+    // motors[2] = true;
+    // motors[3] = true;
+    // motors[4] = true;
+    // motors[5] = true;
+    // motors[6] = true;
+    // motors[7] = true;
+    latch_tx(&motors);
+}
+
+fn init_wiringpi_setup() {
     unsafe {
         wiringPiSetup();
     }
-    println!("wiringPiSetup()");
-
-    println!("irInit()");
-    loop {
-        let dis = distance_measure();
-        println!("Distance: {}", dis);
-        sleep(Duration::from_millis(50));
-    }
-    println!("irInit() - complete");
-
-    sleep(Duration::from_secs(50));
 }
 
-const Trig: i32 = 25;
-const Echo: i32 = 4;
+fn test_drive() {
+    controller_init();
 
-fn distance_measure() -> u32 {
-    unsafe {
-        digitalWrite(Trig, LOW);
-        delayMicroseconds(2);
-        digitalWrite(Trig, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(Trig, LOW);
-    }
-
-    let mut waitCount: i32 = 0;
-
-    unsafe {
-        while !(digitalRead(Echo) == 1) {
-            waitCount = waitCount + 1;
-            if waitCount >= 5000 {
-                break;
-            } else {
-                //   sleep(0.001);
-                // sleep(Duration::from_millis(1));
-                sleep(Duration::from_micros(100));
-            }
-        }
-    }
-    let sw = Stopwatch::start_new();
-    waitCount = 0;
-    unsafe {
-        while !(digitalRead(Echo) == 0) {
-            waitCount = waitCount + 1;
-            if waitCount >= 5000 {
-                break;
-            } else {
-                //   sleep(0.001);
-                //sleep(Duration::from_millis(1));
-                sleep(Duration::from_micros(50));
-            }
-        }
-    }
-
-    // Sound travels at approximately 340 meters per second. This corresponds
-    // to about 29.412µs (microseconds) per centimeter. To measure the distance
-    // the sound has travelled we use the formula:
-    //
-    // Distance = (Time x SpeedOfSound) / 2
-    //
-    // The "2" is in the formula because the sound has to travel back and forth.
-    // First the sound travels away from the sensor, and then it bounces off of
-    // a surface and returns back. The easy way to read the distance as centimeters
-    // is to use the formula: Centimeters = ((Microseconds / 2) / 29). For example,
-    // if it takes 100µs (microseconds) for the ultrasonic sound to bounce back,
-    // then the distance is ((100 / 2) / 29) centimeters or about 1.7 centimeters.
-
-    let usec = sw.elapsed().as_micros();
-    let x = convert(usec);
-
-    println!("micros: {:?}, x: {:?}", usec, x);
-
-    x
-}
-
-fn convert(usec: u128) -> u32 {
-    ((1.6 * (usec as f64 / 100.0) as f64) + 0.0).round() as u32
-}
-
-#[test]
-fn t_convert() {
-    assert_eq!(10, convert(625));
-    assert_eq!(20, convert(1245));
-    assert_eq!(30, convert(1865));
-    assert_eq!(40, convert(2485));
-}
-
-#[test]
-fn test() {
-    let sw = Stopwatch::start_new();
-
-    sleep(Duration::from_millis(1));
-    sleep(Duration::from_millis(1));
-    sleep(Duration::from_millis(1));
-
-    let usec = sw.elapsed_ms();
-
-    let dis = usec / (1000000 * 34000) / 2;
-
-    println!("dis     {}", dis);
-    println!("dis i64 {}", dis as i64);
-    println!("dis f64 {}", dis as i64);
-}
-
-fn drive() {
-    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
-
-    controller_init(&mut motors);
-
-    forward(&mut motors);
-    latch_tx(&mut motors);
+    forward();
     sleep(Duration::from_secs(2));
 
     println!("=====");
 
-    stop(&mut motors);
-    latch_tx(&mut motors);
+    stop();
     sleep(Duration::from_secs(2));
 
     println!("=====");
 
-    forward(&mut motors);
-    latch_tx(&mut motors);
+    forward();
     sleep(Duration::from_secs(2));
 
     println!("=====");
 
-    stop(&mut motors);
-    latch_tx(&mut motors);
+    stop();
 }
-
-const OUTPUT: c_int = 1;
-
-const LOW: c_int = 0;
-const HIGH: c_int = 1;
-
-const MOTORLATCH: c_int = 29; // GPIO 5
-const MOTORCLK: c_int = 28; // GPIO 1 (ID_SC)
-const MOTORDATA: c_int = 27; // GPIO 0 (ID_SD)
 
 // const MOTOR1_A: u8 = 3;
 // const MOTOR1_B: u8 = 2;
@@ -186,15 +92,162 @@ extern "C" {
 
 }
 
+const OUTPUT: c_int = 1;
+const LOW: c_int = 0;
+const HIGH: c_int = 1;
+const MOTORLATCH: c_int = 29; // GPIO 5
+const MOTORCLK: c_int = 28; // GPIO 1 (ID_SC)
+const MOTORDATA: c_int = 27; // GPIO 0 (ID_SD)
 const IRIN: c_int = 5;
-
 const INPUT: c_int = 0;
 const INT_EDGE_FALLING: c_int = 1;
 const PUD_OFF: c_int = 0;
 const PUD_DOWN: c_int = 1;
 const PUD_UP: c_int = 2;
-
 const IR_LIMITS: usize = 64; // bytes buffer = IR_LIMITS x8 bits
+
+fn controller_init() {
+    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
+    unsafe {
+        wiringPiSetup();
+        pinMode(MOTORLATCH, OUTPUT);
+        pinMode(MOTORDATA, OUTPUT);
+        pinMode(MOTORCLK, OUTPUT);
+    }
+
+    latch_tx(&motors);
+}
+
+fn forward() {
+    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
+    motors[2] = true;
+    motors[3] = true;
+    motors[4] = true;
+    motors[7] = true;
+    latch_tx(&motors);
+}
+
+fn stop() {
+    let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
+    motors[0] = false;
+    motors[1] = false;
+    motors[2] = false;
+    motors[3] = false;
+    motors[4] = false;
+    motors[5] = false;
+    motors[6] = false;
+    motors[7] = false;
+    latch_tx(&motors);
+}
+
+fn latch_tx(motors: &[bool; 8]) {
+    unsafe {
+        digitalWrite(MOTORLATCH, LOW);
+        digitalWrite(MOTORDATA, LOW);
+
+        for i in motors.iter() {
+            delayMicroseconds(1); // 10 micros  delayMicroseconds
+
+            digitalWrite(MOTORCLK, LOW);
+
+            if *i {
+                digitalWrite(MOTORDATA, HIGH);
+                println!("HIGH");
+            } else {
+                digitalWrite(MOTORDATA, LOW);
+                println!("low");
+            }
+
+            delayMicroseconds(1); // 10 micros  delayMicroseconds
+            digitalWrite(MOTORCLK, HIGH);
+        }
+
+        digitalWrite(MOTORLATCH, HIGH);
+        // latch_state
+    }
+}
+
+const TRIG: i32 = 25;
+const ECHO: i32 = 4;
+
+fn init_distance_measure() {
+    loop {
+        let dis = distance_measure();
+        println!("Distance: {}", dis);
+        sleep(Duration::from_millis(50));
+    }
+}
+
+fn distance_measure() -> u32 {
+    unsafe {
+        digitalWrite(TRIG, LOW);
+        delayMicroseconds(2);
+        digitalWrite(TRIG, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(TRIG, LOW);
+    }
+
+    let mut wait_count: i32 = 0;
+
+    unsafe {
+        while !(digitalRead(ECHO) == 1) {
+            wait_count = wait_count + 1;
+            if wait_count >= 5000 {
+                break;
+            } else {
+                //   sleep(0.001);
+                // sleep(Duration::from_millis(1));
+                sleep(Duration::from_micros(100));
+            }
+        }
+    }
+    let sw = Stopwatch::start_new();
+    wait_count = 0;
+    unsafe {
+        while !(digitalRead(ECHO) == 0) {
+            wait_count = wait_count + 1;
+            if wait_count >= 5000 {
+                break;
+            } else {
+                //   sleep(0.001);
+                //sleep(Duration::from_millis(1));
+                sleep(Duration::from_micros(50));
+            }
+        }
+    }
+
+    // Sound travels at approximately 340 meters per second. This corresponds
+    // to about 29.412µs (microseconds) per centimeter. To measure the distance
+    // the sound has travelled we use the formula:
+    //
+    // Distance = (Time x SpeedOfSound) / 2
+    //
+    // The "2" is in the formula because the sound has to travel back and forth.
+    // First the sound travels away from the sensor, and then it bounces off of
+    // a surface and returns back. The easy way to read the distance as centimeters
+    // is to use the formula: Centimeters = ((Microseconds / 2) / 29). For example,
+    // if it takes 100µs (microseconds) for the ultrasonic sound to bounce back,
+    // then the distance is ((100 / 2) / 29) centimeters or about 1.7 centimeters.
+
+    let usec = sw.elapsed().as_micros();
+    let x = convert_ms_to_cm(usec);
+
+    // println!("micros: {:?}, x: {:?}", usec, x);
+
+    x
+}
+
+fn convert_ms_to_cm(usec: u128) -> u32 {
+    ((1.6 * (usec as f64 / 100.0) as f64) + 0.0).round() as u32
+}
+
+#[test]
+fn t_convert() {
+    assert_eq!(10, convert_ms_to_cm(625));
+    assert_eq!(20, convert_ms_to_cm(1245));
+    assert_eq!(30, convert_ms_to_cm(1865));
+    assert_eq!(40, convert_ms_to_cm(2485));
+}
 
 fn irInit() {
     unsafe {
@@ -250,62 +303,6 @@ fn count_low() -> u8 {
         }
         println!("count_low i");
         return i;
-    }
-}
-
-fn controller_init(motors: &mut [bool; 8]) {
-    unsafe {
-        wiringPiSetup();
-        pinMode(MOTORLATCH, OUTPUT);
-        pinMode(MOTORDATA, OUTPUT);
-        pinMode(MOTORCLK, OUTPUT);
-    }
-
-    latch_tx(motors);
-}
-
-fn forward(motors: &mut [bool; 8]) {
-    motors[2] = true;
-    motors[3] = true;
-    motors[4] = true;
-    motors[7] = true;
-}
-
-fn stop(motors: &mut [bool; 8]) {
-    motors[0] = false;
-    motors[1] = false;
-    motors[2] = false;
-    motors[3] = false;
-    motors[4] = false;
-    motors[5] = false;
-    motors[6] = false;
-    motors[7] = false;
-}
-
-fn latch_tx(motors: &mut [bool; 8]) {
-    unsafe {
-        digitalWrite(MOTORLATCH, LOW);
-        digitalWrite(MOTORDATA, LOW);
-
-        for i in motors.iter() {
-            delayMicroseconds(1); // 10 micros  delayMicroseconds
-
-            digitalWrite(MOTORCLK, LOW);
-
-            if *i {
-                digitalWrite(MOTORDATA, HIGH);
-                println!("HIGH");
-            } else {
-                digitalWrite(MOTORDATA, LOW);
-                println!("low");
-            }
-
-            delayMicroseconds(1); // 10 micros  delayMicroseconds
-            digitalWrite(MOTORCLK, HIGH);
-        }
-
-        digitalWrite(MOTORLATCH, HIGH);
-        // latch_state
     }
 }
 
