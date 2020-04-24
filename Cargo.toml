@@ -3,8 +3,8 @@ name = "rs-wiringpi"
 version = "0.1.0"
 authors = ["Greg Berns <gregberns@gmail.com>"]
 edition = "2018"
-build = "build.rs"
-links = "wiringpi"
+# build = "build.rs"
+# links = "wiringpi"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

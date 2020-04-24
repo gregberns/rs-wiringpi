@@ -18,3 +18,40 @@ cargo install --force --git https://github.com/rust-embedded/cross cross
 cross build --target=armv7-unknown-linux-gnueabihf
 cp target/armv7-unknown-linux-gnueabihf/debug/rs-wiringpi bin/rs-wiringpi
 ```
+
+## Plan
+
+* Control wheels
+* Detect distance
+
+
+* Create crutch to replace wheel
+* Attach Camera and/or Distance Calc (to swivel)
+* Capture/analyze camera data
+
+## Problems
+
+* Straight line
+  * Get a car to see, find, and drive on a line
+    * Requires camera
+    * See a colored line
+  * Alternative: Drive parallel to a wall (might be harder to do - not sure how that would work)
+  * Alternative: Drive through 'hallway' without hitting sides
+    * Not sure if ultrasound can detect enough around it
+    * Could add it to a swivel, then it could check the sides
+
+* Use Ultrasound on servo to see objects 
+  * @6:11 https://www.youtube.com/watch?v=yohYrKCexvM
+
+* Vehicle find a route out of a space
+  * Alternative: Navigate course without running over a line
+  * Reasonable, but not terribly exciting
+
+* Navigate a cluttered environment - avoid objects
+  * Technique: See a light/item (2 of them) in camera to identify "true north" and navigate toward it
+
+* Image rec: Object identification and tracking by color
+  * Line detection and path creation then following
+  * Stalk the cat
+* Take four lights to determine location
+* Map house and or map space while autonomously traversing it
