@@ -201,10 +201,10 @@ fn latch_tx(motors: &[bool; 8]) {
 
             if *i {
                 digitalWrite(MOTORDATA, HIGH);
-                println!("HIGH");
+            // println!("HIGH");
             } else {
                 digitalWrite(MOTORDATA, LOW);
-                println!("low");
+                // println!("low");
             }
 
             delayMicroseconds(1); // 10 micros  delayMicroseconds

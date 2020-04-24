@@ -59,12 +59,12 @@ fn handle_client(stream: UnixStream) {
 
 fn parse_command(line: String) -> Result<Command, String> {
     match line.as_ref() {
-        "forward" => Ok(Command::Forward),
-        "backward" => Ok(Command::Backward),
-        "turn_right" => Ok(Command::TurnRight),
-        "turn_left" => Ok(Command::TurnLeft),
-        "stop" => Ok(Command::Stop),
-        "kill" => Ok(Command::Kill),
+        "f" => Ok(Command::Forward),
+        "b" => Ok(Command::Backward),
+        "r" => Ok(Command::TurnRight),
+        "l" => Ok(Command::TurnLeft),
+        "s" => Ok(Command::Stop),
+        // "kill" => Ok(Command::Kill),
         _ => Err(format!("Unknown command: {}", line)),
     }
 }
