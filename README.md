@@ -19,6 +19,13 @@ cross build --target=armv7-unknown-linux-gnueabihf
 cp target/armv7-unknown-linux-gnueabihf/debug/rs-wiringpi bin/rs-wiringpi
 ```
 
+## Run
+
+* Build on RPi
+* Open two terminals
+* First terminal: `cargo run`
+* Second terminal: `nc -U /tmp/motors1.sock`
+
 ## Plan
 
 * Control wheels

@@ -14,12 +14,13 @@ fn init_socket() {
 
     fn bind(path: impl AsRef<Path>) -> std::io::Result<UnixListener> {
         let path = path.as_ref();
-        std::fs::remove_file(path)?;
+        // ignore error if it occurs
+        let _ = std::fs::remove_file(path);
         UnixListener::bind(path)
     }
 
     println!("Starting socket");
-    let listener = bind("/tmp/motors1.sock").unwrap();
+    let listener = bind("/tmp/motors.sock").unwrap();
 
     for stream in listener.incoming() {
         match stream {
