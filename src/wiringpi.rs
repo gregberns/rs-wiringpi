@@ -1,16 +1,8 @@
+use crate::model::Command;
 use libc::c_int;
 use std::thread::sleep;
 use std::time::Duration;
 use stopwatch::Stopwatch;
-
-pub enum Command {
-    Forward,
-    Backward,
-    TurnRight,
-    TurnLeft,
-    Stop,
-    Kill,
-}
 
 pub struct Vehicle {
     history: Vec<Command>,
