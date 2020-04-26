@@ -11,8 +11,8 @@ use std::thread::sleep;
 use std::time::Duration;
 mod model;
 
-// mod wiringpi;
-// use crate::wiringpi::Vehicle;
+mod wiringpi;
+use crate::wiringpi::Vehicle;
 
 fn main() {
     // let (tx, rx): (Sender<i32>, Receiver<i32>) = mpsc::channel();
@@ -21,7 +21,7 @@ fn main() {
 
     thread::spawn(move || read_stdin(&state_ref));
 
-    // let mut vehicle = Vehicle::new();
+    let mut vehicle = Vehicle::new();
 
     loop {
         // Stopped
@@ -32,13 +32,16 @@ fn main() {
         // if < -5 turn right
         // if > 5 turn left
         let command = next_action(command_int);
+        println!("Action: {:?}", command);
         // do command
-        // vehicle.send_command(command);
+        vehicle.send_command(command);
         // sleep 100ms
-        sleep_ms(1000);
+        println!("Sleep1");
+        sleep_ms(500);
         // stop
-        // vehicle.send_command(Command::Stop);
+        vehicle.send_command(Command::Stop);
         // sleep 100ms // let the image stabalize
+        println!("Sleep2");
         sleep_ms(1000);
     }
 }
@@ -58,6 +61,7 @@ fn read_stdin(state: &Arc<Mutex<i32>>) {
             Ok(value) => {
                 let mut data = state.lock().unwrap();
                 *data = value;
+                println!("Value: {}", value)
             }
             Err(_) => println!("Parse error. Value: {}", line),
         };
@@ -67,10 +71,10 @@ fn read_stdin(state: &Arc<Mutex<i32>>) {
 }
 
 fn next_action(current_value: i32) -> Command {
-    if current_value < -5 {
+    if current_value < -20 {
         return Command::TurnLeft;
     }
-    if -5 < current_value && current_value < 5 {
+    if -20 < current_value && current_value < 20 {
         return Command::Forward;
     }
     // if 5 < current_value {
