@@ -27,10 +27,12 @@ impl Vehicle {
     }
 }
 
-fn test() {
+pub fn motors_test() {
     // update_wheels(vec![WheelDir::ForwardRearRight]);
-    let mut motors: [bool; 8] = [true, false, false, false, false, false, false, false];
-    latch_tx(&motors);
+    // let mut motors: [bool; 8] = [true, false, false, false, false, false, false, false];
+    // latch_tx(&motors);
+
+    controller_init();
 
     forward();
     sleep(Duration::from_secs(10));
@@ -38,7 +40,10 @@ fn test() {
     backward();
     sleep(Duration::from_secs(10));
 
-    forward();
+    right();
+    sleep(Duration::from_secs(10));
+
+    left();
     sleep(Duration::from_secs(10));
 
     stop();
@@ -92,7 +97,7 @@ fn update_wheels(wheels: Vec<WheelDir>) {
         motors[wheel_index] = true;
     }
 
-    println!("update_wheels: {:?}, motors: {:?}", wheels, motors);
+    println!("motors: {:?}", motors);
 
     latch_tx(&motors);
 }
@@ -170,6 +175,7 @@ const PUD_UP: c_int = 2;
 const IR_LIMITS: usize = 64; // bytes buffer = IR_LIMITS x8 bits
 
 fn controller_init() {
+    println!("controller_init");
     let mut motors: [bool; 8] = [false, false, false, false, false, false, false, false];
     unsafe {
         wiringPiSetup();
@@ -193,7 +199,7 @@ fn latch_tx(motors: &[bool; 8]) {
 
             if *i {
                 digitalWrite(MOTORDATA, HIGH);
-            // println!("HIGH");
+                println!("motor {}: HIGH", i);
             } else {
                 digitalWrite(MOTORDATA, LOW);
                 // println!("low");

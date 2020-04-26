@@ -12,38 +12,40 @@ use std::time::Duration;
 mod model;
 
 mod wiringpi;
-use crate::wiringpi::Vehicle;
+use crate::wiringpi::{motors_test, Vehicle};
 
 fn main() {
+    motors_test();
+
     // let (tx, rx): (Sender<i32>, Receiver<i32>) = mpsc::channel();
     let state: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
     let state_ref = state.clone();
 
     thread::spawn(move || read_stdin(&state_ref));
 
-    let mut vehicle = Vehicle::new();
+    // let mut vehicle = Vehicle::new();
 
-    loop {
-        // Stopped
-        // Read current value
-        let command_int = (*state.lock().unwrap()).clone();
-        // calculate decicion
-        // if between -5 and 5 go forward
-        // if < -5 turn right
-        // if > 5 turn left
-        let command = next_action(command_int);
-        println!("Action: {:?}", command);
-        // do command
-        vehicle.send_command(command);
-        // sleep 100ms
-        println!("Sleep1");
-        sleep_ms(500);
-        // stop
-        vehicle.send_command(Command::Stop);
-        // sleep 100ms // let the image stabalize
-        println!("Sleep2");
-        sleep_ms(1000);
-    }
+    // loop {
+    //     // Stopped
+    //     // Read current value
+    //     let command_int = (*state.lock().unwrap()).clone();
+    //     // calculate decicion
+    //     // if between -5 and 5 go forward
+    //     // if < -5 turn right
+    //     // if > 5 turn left
+    //     let command = next_action(command_int);
+    //     println!("Action: {:?}", command);
+    //     // do command
+    //     vehicle.send_command(command);
+    //     // sleep 100ms
+    //     println!("Sleep1");
+    //     sleep_ms(500);
+    //     // stop
+    //     vehicle.send_command(Command::Stop);
+    //     // sleep 100ms // let the image stabalize
+    //     println!("Sleep2");
+    //     sleep_ms(1000);
+    // }
 }
 
 fn sleep_ms(duration_ms: u64) {
@@ -54,8 +56,11 @@ fn read_stdin(state: &Arc<Mutex<i32>>) {
     use std::io;
     use std::io::prelude::*;
 
+    println!("Starting read_stdin");
+
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
+        println!("Line: {:?}", line);
         let line = line.unwrap();
         match line.parse::<i32>() {
             Ok(value) => {
