@@ -53,10 +53,14 @@ fn read_stdin(state: &Arc<Mutex<i32>>) {
 
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
-        let i = line.unwrap().parse::<i32>().unwrap();
-
-        let mut data = state.lock().unwrap();
-        *data = i;
+        let line = line.unwrap();
+        match line.parse::<i32>() {
+            Ok(value) => {
+                let mut data = state.lock().unwrap();
+                *data = value;
+            }
+            Err(_) => println!("Parse error. Value: {}", line),
+        };
 
         // sender.send(i).unwrap();
     }
